@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahfuz AI</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0b1020;
+    color: white;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.app {
+    width: 100%;
+    max-width: 700px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #111827;
+}
+
+header {
+    padding: 20px;
+    background: #172033;
+    text-align: center;
+    border-bottom: 1px solid #293449;
+}
+
+header h1 {
+    color: #38bdf8;
+    font-size: 25px;
+}
+
+header p {
+    color: #9ca3af;
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+#chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+}
+
+.welcome {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.welcome h2 {
+    font-size: 27px;
+    margin-bottom: 12px;
+}
+
+.welcome p {
+    color: #9ca3af;
+}
+
+.message {
+    padding: 13px 16px;
+    margin: 12px 0;
+    border-radius: 15px;
+    max-width: 85%;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.user {
+    background: #2563eb;
+    margin-left: auto;
+}
+
+.bot {
+    background: #263449;
+    margin-right: auto;
+}
+
+.input-area {
+    padding: 15px;
+    background: #172033;
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid #293449;
+}
+
+input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    background: #263449;
+    color: white;
+    font-size: 15px;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+button:active {
+    opacity: .7;
+}
+
+.clear {
+    font-size: 13px;
+    background: #334155;
+}
+
+footer {
+    text-align: center;
+    color: #64748b;
+    font-size: 11px;
+    padding: 8px;
+    background: #172033;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+    <h1>🤖 MAHFUZ AI</h1>
+    <p>Your Personal AI Assistant</p>
+</header>
+
+<div id="chat">
+
+    <div class="welcome" id="welcome">
+        <h2>👋 Hello!</h2>
+        <p>Welcome to Mahfuz AI.</p>
+        <p>How can I help you today?</p>
+    </div>
+
+</div>
+
+<div class="input-area">
+    <button onclick="voiceInput()">🎤</button>
+
+    <input
+        type="text"
+        id="question"
+        placeholder="Ask me anything..."
+        onkeydown="if(event.key==='Enter') sendMessage()"
+    >
+
+    <button onclick="sendMessage()">➤</button>
+</div>
+
+<footer>
+    MAHFUZ AI • Your Smart Assistant
+</footer>
+
+</div>
+
+<script>
+
+const chat = document.getElementById("chat");
+const input = document.getElementById("question");
+
+function addMessage(text, type) {
+
+    document.getElementById("welcome")?.remove();
+
+    const div = document.createElement("div");
+    div.className = "message " + type;
+    div.textContent = text;
+
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+
+    return div;
+}
+
+function saveHistory() {
+    const messages = [...chat.querySelectorAll(".message")].map(m => ({
+        text: m.textContent,
+        type: m.classList.contains("user") ? "user" : "bot"
+    }));
+
+    localStorage.setItem("mahfuz_history", JSON.stringify(messages));
+}
+
+function loadHistory() {
+    const history = JSON.parse(
+        localStorage.getItem("mahfuz_history") || "[]"
+    );
+
+    history.forEach(m => addMessage(m.text, m.type));
+}
+
+async function sendMessage() {
+
+    const question = input.value.trim();
+
+    if (!question) return;
+
+    addMessage(question, "user");
+
+    input.value = "";
+    saveHistory();
+
+    const thinking = addMessage("Thinking... 🤔", "bot");
+
+    try {
+
+        // AI backend will be connected in the next step.
+        // Never put a private API key in this HTML file.
+
+        await new Promise(resolve => setTimeout(resolve, 700));
+
+        thinking.textContent =
+            "Welcome to Mahfuz AI! 😊\n\n" +
+            "Your chatbot interface is working.\n" +
+            "The real AI brain/API has not been connected yet.\n\n" +
+            "We will connect an AI model in the next step!";
+
+    } catch (error) {
+
+        thinking.textContent = "Something went wrong. Please try again.";
+
+    }
+
+    saveHistory();
+}
+
+function voiceInput() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Voice input is not supported in this browser.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        input.value = event.results[0][0].transcript;
+    };
+}
+
+loadHistory();
+
+</script>
+
+</body>
+</html>
