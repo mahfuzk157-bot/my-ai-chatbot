@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     const { message } = req.body || {};
 
-    if (!message || typeof message !== "string") {
+    if (!message || typeof message !== "string")
       return res.status(400).json({
         error: "Please enter a message."
       });
